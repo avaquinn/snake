@@ -21,7 +21,6 @@ class Snake:
         self.add_head(direction)
         print(self.path)
 
-
     def add_head(self, direction):
         old_head = self.path[0]
         if direction == 'w':
@@ -32,26 +31,44 @@ class Snake:
             new_head = (old_head[0] +1, old_head[1])
         elif direction == 's':
             new_head = (old_head[0], old_head[1] -1)
-        else :
+        else:
             raise Exception("Invalid direction")
         self.path.insert(0,new_head)
-        sense.set_pixel(new_head[0], new_head[1], self.white)
+        if self.is_out_of_bounds() == False:
+            sense.set_pixel(new_head[0], new_head[1], self.white)
+            
+
 
     def remove_tail(self):
        tail = self.path[-1]
        sense.set_pixel(tail[0], tail[1], self.black)
        self.path = self.path[:-1]
 
+    def is_out_of_bounds(self):
+        out_of_bounds = False
+        head = self.path[0]
+        if head[0] > 7 or head[0] < 0 or head[1] > 7 or head[1] < 0:
+            out_of_bounds = True
+        print(out_of_bounds)
+        return out_of_bounds
+
 
 sense.clear((0, 0, 0))
-brian = Snake([(5,4),(6,4),(7,4)],'w')
+brian = Snake([(2,4),(3,4),(4,4)],'w')
 brian.draw()
 
-for i in range(3):
-    time.sleep(0.5)
-    brian.move('w')
 
-for i in range(2):
+while brian.is_out_of_bounds() == False:
     time.sleep(0.5)
     brian.move('n')
+
+
+
+# for i in range(3):
+    # time.sleep(0.5)
+    # brian.move('w')
+
+# for i in range(2):
+    # time.sleep(0.5)
+    # brian.move('n')
 
