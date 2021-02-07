@@ -19,6 +19,7 @@ class Snake:
     def move(self, direction):
         self.remove_tail()
         self.add_head(direction)
+        print(self.path)
 
 
     def add_head(self, direction):
@@ -39,13 +40,18 @@ class Snake:
     def remove_tail(self):
        tail = self.path[-1]
        sense.set_pixel(tail[0], tail[1], self.black)
-       path = self.path[:-1]
+       self.path = self.path[:-1]
 
 
 sense.clear((0, 0, 0))
 brian = Snake([(5,4),(6,4),(7,4)],'w')
 brian.draw()
 
+for i in range(3):
+    time.sleep(0.5)
+    brian.move('w')
 
-time.sleep(2)
-brian.move('w')
+for i in range(2):
+    time.sleep(0.5)
+    brian.move('n')
+
