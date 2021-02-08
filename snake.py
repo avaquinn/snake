@@ -37,8 +37,6 @@ class Snake:
         if self.is_out_of_bounds() == False:
             sense.set_pixel(new_head[0], new_head[1], self.white)
             
-
-
     def remove_tail(self):
        tail = self.path[-1]
        sense.set_pixel(tail[0], tail[1], self.black)
@@ -52,23 +50,22 @@ class Snake:
         print(out_of_bounds)
         return out_of_bounds
 
+class Game:
+    def __init__(self):
+        pass
 
-sense.clear((0, 0, 0))
-brian = Snake([(2,4),(3,4),(4,4)],'w')
-brian.draw()
+    def initalize(self):
+        sense.clear((0, 0, 0))
+        self.brian = Snake([(2,4),(3,4),(4,4)],'w')
+        self.brian.draw()
+
+    def run(self):
+        while self.brian.is_out_of_bounds() == False:
+            time.sleep(0.5)
+            self.brian.move('n')
 
 
-while brian.is_out_of_bounds() == False:
-    time.sleep(0.5)
-    brian.move('n')
-
-
-
-# for i in range(3):
-    # time.sleep(0.5)
-    # brian.move('w')
-
-# for i in range(2):
-    # time.sleep(0.5)
-    # brian.move('n')
+game = Game()
+game.initalize()
+game.run()
 
