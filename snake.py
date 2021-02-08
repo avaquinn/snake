@@ -19,7 +19,7 @@ class Snake:
     def move(self, direction):
         self.remove_tail()
         self.add_head(direction)
-        print(self.path)
+        #print(self.path)
 
     def add_head(self, direction):
         old_head = self.path[0]
@@ -47,7 +47,7 @@ class Snake:
         head = self.path[0]
         if head[0] > 7 or head[0] < 0 or head[1] > 7 or head[1] < 0:
             out_of_bounds = True
-        print(out_of_bounds)
+        #print(out_of_bounds)
         return out_of_bounds
 
 class Game:
@@ -56,13 +56,26 @@ class Game:
 
     def initalize(self):
         sense.clear((0, 0, 0))
+        self.snake_last_moved = self.millis()
         self.brian = Snake([(2,4),(3,4),(4,4)],'w')
         self.brian.draw()
 
+    def millis(self):
+        return int(time.time()*1000)
+
+    def move(self):
+        #print self.millis() - self.snake_last_moved
+        if self.millis() - self.snake_last_moved > 500:
+            if self.brian.is_out_of_bounds() == False:
+                #print("moving snake")
+                self.brian.move('n')
+                self.snake_last_moved = self.millis()
+
     def run(self):
-        while self.brian.is_out_of_bounds() == False:
-            time.sleep(0.5)
-            self.brian.move('n')
+        while True:
+            self.move()
+            if self.brian.is_out_of_bounds() == True:
+                break
 
 
 game = Game()
