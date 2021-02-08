@@ -4,6 +4,33 @@ import time
 
 sense = SenseHat()
 
+class DirectionInput:
+    def __init__(self):
+        pass
+
+    def direction(self):
+	acceleration = sense.get_accelerometer_raw()
+	x = acceleration['x']
+	y = acceleration['y']
+	z = acceleration['z']
+
+	x=round(x, 1)
+	y=round(y, 1)
+	z=round(z, 1)
+
+        if x >= 0.5:
+            direction = 'e'
+        elif x <= -0.5:
+            direction = 'w'
+        elif y >= 0.5:
+            direction = 'n'
+        elif y <= -0.5:
+            direction = 's'
+        else:
+            direction = '?'
+
+        return direction
+
 class Snake:
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -52,12 +79,22 @@ class Snake:
 
 class Game:
     def __init__(self):
-        pass
+        self.direction_input = DirectionInput()
+        self.current_direction = 'w'
+
+    def set_current_direction(self):
+        compass = ['n', 'e', 's', 'w']
+        sensed_direction = self.direction_input.direction()
+        if sensed_direction == '?':
+            return
+        compass_difference = abs(compass.index(self.current_direction) - compass.index(sensed_direction))
+        if compass_difference == 1 or compass_difference == 3:
+            self.current_direction = sensed_direction
 
     def initalize(self):
         sense.clear((0, 0, 0))
         self.snake_last_moved = self.millis()
-        self.brian = Snake([(2,4),(3,4),(4,4)],'w')
+        self.brian = Snake([(2,4),(3,4),(4,4)], self.current_direction)
         self.brian.draw()
 
     def millis(self):
@@ -68,11 +105,12 @@ class Game:
         if self.millis() - self.snake_last_moved > 500:
             if self.brian.is_out_of_bounds() == False:
                 #print("moving snake")
-                self.brian.move('n')
+                self.brian.move(self.current_direction)
                 self.snake_last_moved = self.millis()
 
     def run(self):
         while True:
+            self.set_current_direction()
             self.move()
             if self.brian.is_out_of_bounds() == True:
                 break
