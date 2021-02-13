@@ -1,8 +1,4 @@
-from sense_hat import SenseHat
-
 import time
-
-sense = SenseHat()
 
 class DirectionInput:
     def __init__(self):
@@ -31,17 +27,51 @@ class DirectionInput:
 
         return direction
 
+class CursesEnvironment:
+    import curses as curses
+
+    def __init__(self):
+        self.screen = self.curses.initscr()
+    
+    def set_pixel(self, x, y):
+        self.screen.addstr(y, x, "@")
+	self.screen.refresh()
+    
+    def delete_pixel(self, x, y):
+        self.screen.addstr(y, x, " ")
+	self.screen.refresh()
+
+    def end(self):
+        self.curses.endwin()
+
+class SenseHatEnvironment:
+    #from sense_hat import SenseHat as sense_hat
+
+    def __init__(self):
+        self.sense = SenseHat()
+        self.sense.clear((0, 0, 0))
+    
+    def set_pixel(self, x, y):
+        self.sense.set_pixel(pixel[0], pixel[1], self.white)
+    
+    def delete_pixel(self, x, y):
+        self.sense.set_pixel(tail[0], tail[1], self.black)
+
+    def end(self):
+        self.curses.endwin()
+
 class Snake:
     white = (255, 255, 255)
     black = (0, 0, 0)
 
-    def __init__(self, path, direction):
+    def __init__(self, path, direction, environment):
         self.path = path
         self.direction = direction
+	self.environment = environment
 
     def draw(self):
        for pixel in self.path:
-            sense.set_pixel(pixel[0], pixel[1], self.white)
+	    self.environment.set_pixel(pixel[0], pixel[1])
    
     def move(self, direction):
         self.remove_tail()
@@ -62,11 +92,11 @@ class Snake:
             raise Exception("Invalid direction")
         self.path.insert(0,new_head)
         if self.is_out_of_bounds() == False:
-            sense.set_pixel(new_head[0], new_head[1], self.white)
+            self.environment.set_pixel(new_head[0], new_head[1])
             
     def remove_tail(self):
        tail = self.path[-1]
-       sense.set_pixel(tail[0], tail[1], self.black)
+       self.environment.delete_pixel(tail[0], tail[1])
        self.path = self.path[:-1]
 
     def is_out_of_bounds(self):
@@ -79,12 +109,14 @@ class Snake:
 
 class Game:
     def __init__(self):
-        self.direction_input = DirectionInput()
+        #self.direction_input = DirectionInput()
         self.current_direction = 'w'
+	self.environment = CursesEnvironment()
 
     def set_current_direction(self):
         compass = ['n', 'e', 's', 'w']
-        sensed_direction = self.direction_input.direction()
+        #sensed_direction = self.direction_input.direction()
+	sensed_direction = 'w'
         if sensed_direction == '?':
             return
         compass_difference = abs(compass.index(self.current_direction) - compass.index(sensed_direction))
@@ -92,9 +124,8 @@ class Game:
             self.current_direction = sensed_direction
 
     def initalize(self):
-        sense.clear((0, 0, 0))
         self.snake_last_moved = self.millis()
-        self.brian = Snake([(2,4),(3,4),(4,4)], self.current_direction)
+        self.brian = Snake([(2,4),(3,4),(4,4)], self.current_direction, self.environment)
         self.brian.draw()
 
     def millis(self):
@@ -114,6 +145,8 @@ class Game:
             self.move()
             if self.brian.is_out_of_bounds() == True:
                 break
+	self.environment.end()
+
 
 
 game = Game()
