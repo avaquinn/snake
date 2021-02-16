@@ -88,19 +88,22 @@ class Egg:
     red = (255, 0, 0)
     def __init__(self, environment):
         self.environment = environment
-
-    def place(self):
         self.x = random.randint(0, self.environment.width - 1)
         self.y = random.randint(0, self.environment.height - 1)
         self.environment.set_pixel(self.x, self.y, self.red)
 
-class Snake:
+    def location(self):
+        return (self.x, self.y)
 
+class Snake:
 
     def __init__(self, path, direction, environment):
         self.path = path
         self.direction = direction
         self.environment = environment
+
+    def head(self):
+        return self.path[0]
 
     def draw(self):
         for pixel in self.path:
@@ -142,6 +145,15 @@ class Snake:
         # print(out_of_bounds)
 
         return out_of_bounds
+
+class Proximity:
+
+    def __init__(self, snake, egg):
+        self.snake = snake
+        self.egg = egg
+    
+    def is_eaten(self):
+        return self.snake.head() == self.egg.location()
 
 
 class Game:
@@ -186,10 +198,11 @@ class Game:
 
     def run(self):
         egg = Egg(self.environment)
-        egg.place()
         while True:
             self.set_current_direction()
             self.move()
+            if Proximity(self.brian, egg).is_eaten() == True:
+                egg = Egg(self.environment)
             if self.brian.is_out_of_bounds() == True:
                 break
         self.environment.end()
