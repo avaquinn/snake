@@ -1,36 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 import time
-
-
-class DirectionInput:
-
-    def __init__(self):
-        pass
-
-    def direction(self):
-        acceleration = sense.get_accelerometer_raw()
-        x = acceleration['x']
-        y = acceleration['y']
-        z = acceleration['z']
-
-        x = round(x, 1)
-        y = round(y, 1)
-        z = round(z, 1)
-
-        if x >= 0.5:
-            direction = 'e'
-        elif x <= -0.5:
-            direction = 'w'
-        elif y >= 0.5:
-            direction = 'n'
-        elif y <= -0.5:
-            direction = 's'
-        else:
-            direction = '?'
-
-        return direction
-
+from sense_hat import SenseHat 
 
 class CursesEnvironment:
 
@@ -70,27 +42,47 @@ class CursesEnvironment:
 
 
 class SenseHatEnvironment:
-
-    # from sense_hat import SenseHat as sense_hat
+    white = (255, 255, 255)
+    black = (0, 0, 0)
 
     def __init__(self):
         self.sense = SenseHat()
         self.sense.clear((0, 0, 0))
 
     def set_pixel(self, x, y):
-        self.sense.set_pixel(pixel[0], pixel[1], self.white)
+        self.sense.set_pixel(x, y, self.white)
 
     def delete_pixel(self, x, y):
-        self.sense.set_pixel(tail[0], tail[1], self.black)
+        self.sense.set_pixel(x, y, self.black)
 
     def end(self):
-        self.curses.endwin()
+        pass
 
+    def direction_input(self):
+        acceleration = self.sense.get_accelerometer_raw()
+        x = acceleration['x']
+        y = acceleration['y']
+        z = acceleration['z']
+
+        x = round(x, 1)
+        y = round(y, 1)
+        z = round(z, 1)
+
+        if x >= 0.5:
+            direction = 'e'
+        elif x <= -0.5:
+            direction = 'w'
+        elif y >= 0.5:
+            direction = 'n'
+        elif y <= -0.5:
+            direction = 's'
+        else:
+            direction = '?'
+
+        return direction
 
 class Snake:
 
-    white = (255, 255, 255)
-    black = (0, 0, 0)
 
     def __init__(self, path, direction, environment):
         self.path = path
@@ -143,14 +135,14 @@ class Game:
 
     def __init__(self):
         self.current_direction = 'w'
-        self.environment = CursesEnvironment()
+        #self.environment = CursesEnvironment()
+        self.environment = SenseHatEnvironment()
 
     def set_current_direction(self):
         compass = ['n', 'e', 's', 'w']
 
         sensed_direction = self.environment.direction_input()
 
-        sensed_direction = 'w'
         if sensed_direction == '?':
             return
         compass_difference = abs(compass.index(self.current_direction)
