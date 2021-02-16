@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+import random
 from sense_hat import SenseHat 
 
 class CursesEnvironment:
@@ -44,13 +45,15 @@ class CursesEnvironment:
 class SenseHatEnvironment:
     white = (255, 255, 255)
     black = (0, 0, 0)
+    width = 8
+    height = 8
 
     def __init__(self):
         self.sense = SenseHat()
         self.sense.clear((0, 0, 0))
 
-    def set_pixel(self, x, y):
-        self.sense.set_pixel(x, y, self.white)
+    def set_pixel(self, x, y, color = (255, 255, 255)):
+        self.sense.set_pixel(x, y, color)
 
     def delete_pixel(self, x, y):
         self.sense.set_pixel(x, y, self.black)
@@ -80,6 +83,16 @@ class SenseHatEnvironment:
             direction = '?'
 
         return direction
+
+class Egg:
+    red = (255, 0, 0)
+    def __init__(self, environment):
+        self.environment = environment
+
+    def place(self):
+        self.x = random.randint(0, self.environment.width - 1)
+        self.y = random.randint(0, self.environment.height - 1)
+        self.environment.set_pixel(self.x, self.y, self.red)
 
 class Snake:
 
@@ -123,7 +136,7 @@ class Snake:
     def is_out_of_bounds(self):
         out_of_bounds = False
         head = self.path[0]
-        if head[0] > 7 or head[0] < 0 or head[1] > 7 or head[1] < 0:
+        if head[0] > self.environment.width - 1 or head[0] < 0 or head[1] > self.environment.height - 1 or head[1] < 0:
             out_of_bounds = True
 
         # print(out_of_bounds)
@@ -172,6 +185,8 @@ class Game:
                 self.snake_last_moved = self.millis()
 
     def run(self):
+        egg = Egg(self.environment)
+        egg.place()
         while True:
             self.set_current_direction()
             self.move()
