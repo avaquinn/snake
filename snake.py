@@ -143,9 +143,20 @@ class Snake:
         if head[0] > self.environment.width - 1 or head[0] < 0 or head[1] > self.environment.height - 1 or head[1] < 0:
             out_of_bounds = True
 
-        # print(out_of_bounds)
-
         return out_of_bounds
+
+    def is_collided(self):
+        head = self.path[0]
+        collided = False
+        for point in self.path[1:]:
+            if point == head:
+                collided = True
+                break
+        return collided
+
+    def is_snake_dead(self):
+        return self.is_out_of_bounds() or self.is_collided()
+
 
 class Proximity:
 
@@ -201,7 +212,7 @@ class Game:
                 self.tick()
                 last_tick = self.millis()
             self.set_current_direction()
-            if self.brian.is_out_of_bounds() == True:
+            if self.brian.is_snake_dead() == True:
                 break
         self.environment.end()
 
