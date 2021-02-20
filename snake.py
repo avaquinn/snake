@@ -177,33 +177,33 @@ class Game:
             self.current_direction = sensed_direction
 
     def initalize(self):
-        self.snake_last_moved = self.millis()
         self.brian = Snake([(2, 4), (3, 4), (4, 4)],
                            self.current_direction, self.environment)
         self.brian.draw()
+        self.egg = Egg(self.environment)
+        self.last_move_ate_egg = False
 
     def millis(self):
         return int(time.time() * 1000)
 
-    def move(self, grow):
-        if self.millis() - self.snake_last_moved > 500 or grow == True:
-            if self.brian.is_out_of_bounds() == False:
-                self.brian.move(self.current_direction, grow)
-                self.snake_last_moved = self.millis()
+    def tick(self):
+        if self.brian.is_out_of_bounds() == False:
+            self.brian.move(self.current_direction, self.last_move_ate_egg)
+            self.last_move_ate_egg = Proximity(self.brian, self.egg).is_eaten() 
+            if self.last_move_ate_egg == True:
+                self.egg = Egg(self.environment)
 
     def run(self):
-        egg = Egg(self.environment)
-        egg_eaten = False
+        last_tick = self.millis()
+
         while True:
+            if self.millis() - last_tick > 500:
+                self.tick()
+                last_tick = self.millis()
             self.set_current_direction()
-            self.move(egg_eaten)
-            egg_eaten = Proximity(self.brian, egg).is_eaten() 
-            if egg_eaten == True:
-                egg = Egg(self.environment)
             if self.brian.is_out_of_bounds() == True:
                 break
         self.environment.end()
-
 
 game = Game()
 game.initalize()
