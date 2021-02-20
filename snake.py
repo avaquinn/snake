@@ -71,25 +71,38 @@ class SenseHatEnvironment:
         y = round(y, 1)
         z = round(z, 1)
 
-        if x >= 0.5:
+        threshold = 0.2
+        if x >= threshold:
             direction = 'e'
-        elif x <= -0.5:
+        elif x <= -threshold:
             direction = 'w'
-        elif y >= 0.5:
+        elif y >= threshold:
             direction = 'n'
-        elif y <= -0.5:
+        elif y <= -threshold:
             direction = 's'
         else:
             direction = '?'
 
         return direction
 
+    def show_letter(self, letter):
+        self.sense.show_letter(letter, (0, 0, 255))
+    
 class Egg:
     red = (255, 0, 0)
-    def __init__(self, environment):
+
+    def __init__(self, environment, illegal_points):
         self.environment = environment
-        self.x = random.randint(0, self.environment.width - 1)
-        self.y = random.randint(0, self.environment.height - 1)
+        self.illegal_points = illegal_points
+        self.__place()
+        
+    def __place(self):
+        while True:
+            self.x = random.randint(0, self.environment.width - 1)
+            self.y = random.randint(0, self.environment.height - 1)
+            if ((self.x, self.y) in self.illegal_points) == False:
+                break
+
         self.environment.set_pixel(self.x, self.y, self.red)
 
     def location(self):
@@ -191,18 +204,23 @@ class Game:
         self.brian = Snake([(2, 4), (3, 4), (4, 4)],
                            self.current_direction, self.environment)
         self.brian.draw()
-        self.egg = Egg(self.environment)
+        self.egg = Egg(self.environment, self.brian.path)
         self.last_move_ate_egg = False
+        self.score = 0
 
     def millis(self):
         return int(time.time() * 1000)
+
+    def print_score(self):
+        self.environment.show_letter(str(self.score))
 
     def tick(self):
         if self.brian.is_out_of_bounds() == False:
             self.brian.move(self.current_direction, self.last_move_ate_egg)
             self.last_move_ate_egg = Proximity(self.brian, self.egg).is_eaten() 
             if self.last_move_ate_egg == True:
-                self.egg = Egg(self.environment)
+                self.egg = Egg(self.environment, self.brian.path)
+                self.score += 1
 
     def run(self):
         last_tick = self.millis()
@@ -214,8 +232,10 @@ class Game:
             self.set_current_direction()
             if self.brian.is_snake_dead() == True:
                 break
+        self.print_score()
         self.environment.end()
 
 game = Game()
 game.initalize()
 game.run()
+
