@@ -34,13 +34,11 @@ class CursesEnvironment:
 
         keyboard_input = self.screen.getch()
         if keyboard_input in direction_map.keys():
-            #print keyboard_input
             direction = direction_map[keyboard_input]
         else:
             direction = '?'
 
         return direction
-
 
 class SenseHatEnvironment:
     white = (255, 255, 255)
@@ -71,7 +69,7 @@ class SenseHatEnvironment:
         y = round(y, 1)
         z = round(z, 1)
 
-        threshold = 0.2
+        threshold = 0.5
         if x >= threshold:
             direction = 'e'
         elif x <= -threshold:
@@ -85,8 +83,8 @@ class SenseHatEnvironment:
 
         return direction
 
-    def show_letter(self, letter):
-        self.sense.show_letter(letter, (0, 0, 255))
+    def show_message(self, message):
+        self.sense.show_message(message)
     
 class Egg:
     red = (255, 0, 0)
@@ -127,7 +125,6 @@ class Snake:
             self.remove_tail()
         self.add_head(direction)
 
-        # print(self.path)
 
     def add_head(self, direction):
         old_head = self.path[0]
@@ -212,7 +209,7 @@ class Game:
         return int(time.time() * 1000)
 
     def print_score(self):
-        self.environment.show_letter(str(self.score))
+        self.environment.show_message(str(self.score))
 
     def tick(self):
         if self.brian.is_out_of_bounds() == False:
