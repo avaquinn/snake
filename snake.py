@@ -109,8 +109,9 @@ class Snake:
         for pixel in self.path:
             self.environment.set_pixel(pixel[0], pixel[1])
 
-    def move(self, direction):
-        self.remove_tail()
+    def move(self, direction, grow):
+        if grow == False:
+            self.remove_tail()
         self.add_head(direction)
 
         # print(self.path)
@@ -184,24 +185,20 @@ class Game:
     def millis(self):
         return int(time.time() * 1000)
 
-    def move(self):
-
-        # print self.millis() - self.snake_last_moved
-
-        if self.millis() - self.snake_last_moved > 500:
+    def move(self, grow):
+        if self.millis() - self.snake_last_moved > 500 or grow == True:
             if self.brian.is_out_of_bounds() == False:
-
-                # print("moving snake")
-
-                self.brian.move(self.current_direction)
+                self.brian.move(self.current_direction, grow)
                 self.snake_last_moved = self.millis()
 
     def run(self):
         egg = Egg(self.environment)
+        egg_eaten = False
         while True:
             self.set_current_direction()
-            self.move()
-            if Proximity(self.brian, egg).is_eaten() == True:
+            self.move(egg_eaten)
+            egg_eaten = Proximity(self.brian, egg).is_eaten() 
+            if egg_eaten == True:
                 egg = Egg(self.environment)
             if self.brian.is_out_of_bounds() == True:
                 break
