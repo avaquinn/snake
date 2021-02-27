@@ -26,6 +26,13 @@ module screw_hole(x, y, z)
         #cylinder(thickness, d = diameter_screw_hole);
 }
 
+module snake_text()
+{
+    translate([60, 50, 1])
+        linear_extrude(1.5)
+            text("SNAKE", size = 8);
+}
+
 difference()
 {
     top();
@@ -34,5 +41,5 @@ difference()
     screw_hole(screw_hole_border_width, width -screw_hole_border_width, 0);
     screw_hole(length - screw_hole_border_width, width -screw_hole_border_width, 0);
     viewport();
+    #snake_text();
 }
-    
