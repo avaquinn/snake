@@ -28,7 +28,7 @@ module screw_hole(x, y, z)
 
 module snake_text()
 {
-    translate([60, 50, 1])
+    translate([62, 53, 1])
         linear_extrude(1.5)
             text("SNAKE", size = 8);
 }
