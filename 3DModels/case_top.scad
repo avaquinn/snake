@@ -1,9 +1,9 @@
-length = 105;
-width = 76;
+length = 103.5;
+width = 74.25;
 thickness = 2.5;
 screw_hole_width = 66.85;
 screw_hole_length = 96.96;
-diameter_screw_hole = 3;
+diameter_screw_hole = 3.5;
 viewport_size = 45;
 
 screw_hole_border_width = (width - screw_hole_width) / 2;
