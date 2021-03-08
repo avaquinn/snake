@@ -229,10 +229,13 @@ class Game:
             self.set_current_direction()
             if self.brian.is_snake_dead() == True:
                 break
+        time.sleep(1.5)
         self.print_score()
         self.environment.end()
 
-game = Game()
-game.initalize()
-game.run()
+while True:
+    game = Game()
+    game.initalize()
+    game.run()
+    time.sleep(1.5)
 
